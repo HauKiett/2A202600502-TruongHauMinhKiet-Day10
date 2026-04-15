@@ -11,9 +11,9 @@ User hoặc agent trả lời sai version nghiệp vụ dù pipeline vẫn có v
 ## Detection
 
 - Log pipeline có `expectation[refund_no_stale_14d_window] FAIL (halt) :: violations=1`.
-- Eval retrieval tại `artifacts/eval/after_inject_bad.csv` cho `q_refund_window` có `contains_expected=yes` nhưng `hits_forbidden=yes`.
+- Log `artifacts/logs/run_inject-bad.log` cho `q_refund_window` có `expectation[refund_no_stale_14d_window] FAIL (halt) :: violations=1`.
 - Grading sẽ fail ở `gq_d10_01` nếu top-k còn chứa chunk stale refund.
-- Freshness check trả về `FAIL` nếu `age_hours > 24`, như run `final-submit` có `age_hours≈120.163`.
+- Freshness check trả về `FAIL` nếu `age_hours > 24`, như run `final-submit` có `age_hours≈120.581`.
 
 ---
 
@@ -23,7 +23,7 @@ User hoặc agent trả lời sai version nghiệp vụ dù pipeline vẫn có v
 |------|----------|------------------|
 | 1 | Mở `artifacts/manifests/manifest_<run_id>.json` | Xác nhận `run_id`, số record và boundary timestamps |
 | 2 | Mở `artifacts/logs/run_<run_id>.log` | Thấy expectation nào fail, có `embed_prune_removed` hay không |
-| 3 | So sánh `artifacts/eval/after_inject_bad.csv` với `artifacts/eval/after_fix_final-submit.csv` | Xác nhận câu refund đổi từ `hits_forbidden=yes` sang `no` |
+| 3 | So sánh `artifacts/logs/run_inject-bad.log` với `artifacts/eval/after_fix_final-submit.csv` | Xác nhận run inject bị fail ở stale refund và run cuối không còn forbidden content |
 | 4 | Nếu nghi stale content | Kiểm cleaned CSV và quarantine CSV để xem row sai nằm ở đâu, đã bị giữ lại hay đã được cô lập |
 
 ---

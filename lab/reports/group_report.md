@@ -1,15 +1,14 @@
 # Báo Cáo Nhóm - Lab Day 10: Data Pipeline & Data Observability
 
-**Tên nhóm:** 2A202600502-Trương Hầu Minh Kiệt, 2A202600503-Trương Hầu Minh Kiệt
+**Tên nhóm:** Trương Hậu Minh Kiệt - Võ Thành Danh
 **Thành viên:**
 
 | Tên | Vai trò (Day 10) | Email |
 |-----|------------------|-------|
 | Võ Thành Danh | Ingestion, Cleaning, Expectation, Embed baseline (Sprint 1-2) | vothanhdanh8208@gmail.com |
-| Trương Hầu Minh Kiệt | Monitoring, eval/grading, docs, reports (Sprint 3-4) | truonghaukiet@gmai.com |
+| Trương Hậu Minh Kiệt | Monitoring, eval/grading, docs, reports (Sprint 3-4) | truonghaukiet@gmail.com |
 
-**Ngày nộp:** 2026-04-15  
-
+**Ngày nộp:** 2026-04-15 
 
 ---
 
@@ -53,7 +52,7 @@ python eval_retrieval.py --out artifacts/eval/after_fix_final-submit.csv
 
 Điểm quan trọng là volume của hai run gần như không đổi: cả `inject-bad` và `final-submit` đều có `raw_records=10`, `cleaned_records=6`, `quarantine_records=4`. Sự khác biệt thật nằm ở chất lượng content trong top-k retrieval.
 
-Ở câu `q_refund_window`, file `after_inject_bad.csv` cho kết quả `contains_expected=yes` nhưng `hits_forbidden=yes`, nghĩa là top-k vẫn còn chunk stale `14 ngày làm việc`. Sau khi chạy lại luồng chuẩn, `after_fix_final-submit.csv` đổi thành `contains_expected=yes`, `hits_forbidden=no`. Đây là bằng chứng before/after mạnh nhất của nhóm vì nó cho thấy một regression ở tầng data có thể không làm sai top-1 ngay lập tức nhưng vẫn làm index không an toàn cho agent.
+Ở câu `q_refund_window`, log `run_inject-bad.log` cho thấy `expectation[refund_no_stale_14d_window] FAIL (halt) :: violations=1`, nghĩa là stale refund đã bị phát hiện ngay ở tầng data. Sau khi chạy lại luồng chuẩn, `after_fix_final-submit.csv` cho kết quả `contains_expected=yes`, `hits_forbidden=no`. Đây là bằng chứng before/after mạnh nhất của nhóm vì nó cho thấy regression ở tầng data được phát hiện trước publish và được dọn sạch ở run cuối.
 
 Ở câu `q_leave_version`, cả trước và sau đều có `contains_expected=yes`, `hits_forbidden=no`, `top1_doc_expected=yes`. Điều này chứng minh bộ rule HR hiện tại giữ được đúng version 2026 của chính sách nghỉ phép và đạt điều kiện Merit cho `gq_d10_03`.
 
@@ -61,7 +60,7 @@ python eval_retrieval.py --out artifacts/eval/after_fix_final-submit.csv
 
 ## 4. Freshness & monitoring
 
-Manifest cuối cùng của nhóm là `artifacts/manifests/manifest_final-submit.json`, trong đó có cả `ingest_boundary_ts` và `publish_boundary_ts`. Freshness vẫn `FAIL` vì `latest_exported_at=2026-04-10T08:00:00` cũ hơn SLA 24 giờ (`age_hours≈120.163`). Nhóm giữ nguyên fail này và giải thích trong runbook rằng đây là đặc tính của dữ liệu mẫu, không phải lỗi publish. Việc log cả hai boundary giúp nhóm tách được chuyện pipeline publish xong với chuyện snapshot nguồn còn tươi hay không.
+Manifest cuối cùng của nhóm là `artifacts/manifests/manifest_final-submit.json`, trong đó có cả `ingest_boundary_ts` và `publish_boundary_ts`. Freshness vẫn `FAIL` vì `latest_exported_at=2026-04-10T08:00:00` cũ hơn SLA 24 giờ (`age_hours≈120.581` theo log thành công của `final-submit`). Nhóm giữ nguyên fail này và giải thích trong runbook rằng đây là đặc tính của dữ liệu mẫu, không phải lỗi publish. Việc log cả hai boundary giúp nhóm tách được chuyện pipeline publish xong với chuyện snapshot nguồn còn tươi hay không.
 
 ---
 

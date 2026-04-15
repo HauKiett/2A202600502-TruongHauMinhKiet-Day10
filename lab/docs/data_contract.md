@@ -1,6 +1,6 @@
 # Data contract - Lab Day 10
 
-> File này cụ thể hóa `contracts/data_contract.yaml` cho nhóm Minh Kiệt - Thành Danh.
+> File này cụ thể hóa `contracts/data_contract.yaml` cho nhóm Trương Hầu Minh Kiệt - Võ Thành Danh.
 
 ---
 
@@ -11,7 +11,7 @@
 | `data/raw/policy_export_dirty.csv` | Batch CSV export từ hệ nguồn mô phỏng | duplicate, `doc_id` lạ, thiếu `effective_date`, `exported_at` rỗng, stale content | `raw_records`, `cleaned_records`, `quarantine_records`, expectation halt |
 | `data/docs/*.txt` | Canonical reference do nhóm giữ trong repo | canonical thay đổi nhưng export chưa sync lại, version HR/refund lệch | eval `q_refund_window`, `q_leave_version`, grading JSONL |
 
-**Owner nhóm:** `team_minhkiet_danh`  
+**Owner nhóm:** `Trương Hầu Minh Kiệt  
 **SLA freshness:** 24 giờ, đo ở boundary publish nhưng so sánh với `latest_exported_at` của snapshot.
 
 ---

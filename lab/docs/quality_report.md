@@ -22,22 +22,23 @@
 
 **Artifact chính**
 
-- `artifacts/eval/after_inject_bad.csv`
+- `artifacts/logs/run_inject-bad.log`
 - `artifacts/eval/after_fix_final-submit.csv`
+- `artifacts/eval/grading_run.jsonl`
 
 **Câu hỏi then chốt: `q_refund_window`**
 
-- Trước fix (`inject-bad`): `contains_expected=yes`, `hits_forbidden=yes`, `top1_doc_id=policy_refund_v4`
+- Trước fix (`inject-bad`): log cho thấy `refund_no_stale_14d_window` fail với `violations=1`
 - Sau fix (`final-submit`): `contains_expected=yes`, `hits_forbidden=no`, `top1_doc_id=policy_refund_v4`
 
-Diễn giải: top-1 vẫn là đúng doc cả trước và sau, nhưng bản inject làm top-k còn dính chunk stale `14 ngày làm việc`. Đây là đúng tinh thần observability của bài: nếu chỉ nhìn top-1 thì dễ tưởng index vẫn ổn.
+Diễn giải: bản inject cố ý bỏ rule sửa refund `14 -> 7`, nên expectation suite phát hiện stale refund ngay trước publish. Sau khi khôi phục snapshot sạch ở `final-submit`, eval cho thấy câu refund không còn dính forbidden content trong top-k.
 
 **Merit: `q_leave_version`**
 
-- Trước fix (`inject-bad`): `contains_expected=yes`, `hits_forbidden=no`, `top1_doc_expected=yes`
 - Sau fix (`final-submit`): `contains_expected=yes`, `hits_forbidden=no`, `top1_doc_expected=yes`
+- `grading_run.jsonl`: `gq_d10_03` có `contains_expected=true`, `hits_forbidden=false`, `top1_doc_matches=true`
 
-Diễn giải: rule stale HR theo date + content giúp giữ index đúng với canonical 2026, nên câu HR ổn định qua cả hai run.
+Diễn giải: rule stale HR theo date + content giúp giữ index đúng với canonical 2026, nên câu HR đạt điều kiện Merit ở run cuối.
 
 ---
 
@@ -45,7 +46,7 @@ Diễn giải: rule stale HR theo date + content giúp giữ index đúng với 
 
 Kết quả từ `python etl_pipeline.py freshness --manifest artifacts/manifests/manifest_final-submit.json`:
 
-- `FAIL {"latest_exported_at": "2026-04-10T08:00:00", "age_hours": 120.163, "sla_hours": 24.0, "reason": "freshness_sla_exceeded"}`
+- `FAIL {"latest_exported_at": "2026-04-10T08:00:00", "age_hours": 120.581, "sla_hours": 24.0, "reason": "freshness_sla_exceeded"}`
 
 Nhóm giữ nguyên `FAIL` này thay vì chỉnh tay timestamp vì đây là đặc tính của bộ snapshot mẫu: dữ liệu nguồn cũ hơn SLA 24 giờ. Trong runbook nhóm ghi rõ đây là fail hợp lệ của nguồn dữ liệu, không phải lỗi ở bước publish.
 
