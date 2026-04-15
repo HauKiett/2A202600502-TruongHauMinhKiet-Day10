@@ -1,12 +1,12 @@
 # Báo Cáo Nhóm - Lab Day 10: Data Pipeline & Data Observability
 
-**Tên nhóm:** Trương Hậu Minh Kiệt - Võ Thành Danh
+**Tên nhóm:** Trương Hầu Minh Kiệt - Võ Thành Danh
 **Thành viên:**
 
 | Tên | Vai trò (Day 10) | Email |
 |-----|------------------|-------|
 | Võ Thành Danh | Ingestion, Cleaning, Expectation, Embed baseline (Sprint 1-2) | vothanhdanh8208@gmail.com |
-| Trương Hậu Minh Kiệt | Monitoring, eval/grading, docs, reports (Sprint 3-4) | truonghaukiet@gmail.com |
+| Trương Hầu Minh Kiệt | Monitoring, eval/grading, docs, reports (Sprint 3-4) | truonghaukiet@gmail.com |
 
 **Ngày nộp:** 2026-04-15 
 
@@ -16,7 +16,7 @@
 
 Nhóm dùng một entrypoint duy nhất là `python etl_pipeline.py run --run-id final-submit` để chạy toàn bộ luồng ingest -> clean -> validate -> embed. Raw đầu vào là `data/raw/policy_export_dirty.csv`, sau đó pipeline sinh `cleaned CSV`, `quarantine CSV`, log, manifest và publish vào Chroma collection `day10_kb`. `run_id` xuất hiện ngay đầu log, đồng thời được gắn vào manifest và metadata lúc embed nên nhóm có thể nối toàn bộ trace của một lần chạy từ raw cho đến retrieval.
 
-Võ Thành Danh phụ trách Sprint 1-2: ingest, log `raw_records/cleaned_records/quarantine_records`, R7-R9, Pydantic v2, E7-E9 và embed idempotent `upsert + prune`. Trương Hầu Minh Kiệt phụ trách Sprint 3-4: inject xấu, before/after eval, `grading_questions.json`, `grading_run.py`, runbook, quality report và các báo cáo nộp bài.
+Võ Thành Danh phụ trách Sprint 1-2: ingest, log `raw_records/cleaned_records/quarantine_records`, R7-R9, Pydantic v2, E7-E9 và embed idempotent `upsert + prune`. Trương Hầu Minh Kiệt phụ trách Sprint 3-4: inject xấu, before/after eval, `grading_questions.json`, rerun `grading_run.py --questions grading_questions.json --out artifacts/eval/grading_run_from_root.jsonl`, runbook, quality report và các báo cáo nộp bài.
 
 ---
 
@@ -54,7 +54,7 @@ python eval_retrieval.py --out artifacts/eval/after_fix_final-submit.csv
 
 Ở câu `q_refund_window`, log `run_inject-bad.log` cho thấy `expectation[refund_no_stale_14d_window] FAIL (halt) :: violations=1`, nghĩa là stale refund đã bị phát hiện ngay ở tầng data. Sau khi chạy lại luồng chuẩn, `after_fix_final-submit.csv` cho kết quả `contains_expected=yes`, `hits_forbidden=no`. Đây là bằng chứng before/after mạnh nhất của nhóm vì nó cho thấy regression ở tầng data được phát hiện trước publish và được dọn sạch ở run cuối.
 
-Ở câu `q_leave_version`, cả trước và sau đều có `contains_expected=yes`, `hits_forbidden=no`, `top1_doc_expected=yes`. Điều này chứng minh bộ rule HR hiện tại giữ được đúng version 2026 của chính sách nghỉ phép và đạt điều kiện Merit cho `gq_d10_03`.
+Ở câu `q_leave_version`, cả trước và sau đều có `contains_expected=yes`, `hits_forbidden=no`, `top1_doc_expected=yes`. Sau khi rerun grading bằng file câu hỏi ở thư mục gốc, artifact `artifacts/eval/grading_run_from_root.jsonl` cũng cho `gq_d10_03` với `contains_expected=true`, `hits_forbidden=false`, `top1_doc_matches=true`, đồng thời `gq_d10_01` và `gq_d10_02` đều đạt. Điều này chứng minh bộ rule HR hiện tại giữ được đúng version 2026 của chính sách nghỉ phép và đạt điều kiện Merit cho `gq_d10_03`.
 
 ---
 
