@@ -1,0 +1,64 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Project-specific local data & artifacts
+artifacts/*
+!artifacts/cleaned/
+!artifacts/cleaned/*.csv
+!artifacts/eval/
+!artifacts/eval/*.csv
+!artifacts/eval/*.json
+!artifacts/eval/*.jsonl
+!artifacts/logs/
+!artifacts/logs/*.log
+!artifacts/manifests/
+!artifacts/manifests/*.json
+!artifacts/quarantine/
+!artifacts/quarantine/*.csv
+chroma_db/
+.claude/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Pytest / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+*.pyc

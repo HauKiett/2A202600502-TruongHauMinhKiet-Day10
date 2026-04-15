@@ -1,0 +1,16 @@
+{
+  "run_id": "audit-check",
+  "run_timestamp": "2026-04-15T07:56:40.474063+00:00",
+  "raw_path": "data\\raw\\policy_export_dirty.csv",
+  "raw_records": 10,
+  "cleaned_records": 6,
+  "quarantine_records": 4,
+  "latest_exported_at": "2026-04-10T08:00:00",
+  "ingest_boundary_ts": "2026-04-15T07:56:09.456743+00:00",
+  "publish_boundary_ts": "2026-04-15T07:56:40.473001+00:00",
+  "no_refund_fix": false,
+  "skipped_validate": false,
+  "cleaned_csv": "artifacts\\cleaned\\cleaned_audit-check.csv",
+  "chroma_path": "./chroma_db",
+  "chroma_collection": "day10_kb"
+}

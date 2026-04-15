@@ -1,0 +1,71 @@
+{
+  "baseline_sample": {
+    "raw_records": 10,
+    "cleaned_records": 6,
+    "quarantine_records": 4
+  },
+  "r7_bom_strip": {
+    "inject": "doc_id starts with UTF-8 BOM",
+    "without_rule_emulated": {
+      "cleaned_records": 0,
+      "quarantine_records": 1,
+      "reason": "unknown_doc_id"
+    },
+    "with_rule_observed": {
+      "cleaned_records": 1,
+      "quarantine_records": 0,
+      "first_doc_id": "policy_refund_v4"
+    }
+  },
+  "r8_exported_at_validation": {
+    "inject": "exported_at empty string",
+    "without_rule_emulated": {
+      "cleaned_records": 1,
+      "quarantine_records": 0
+    },
+    "with_rule_observed": {
+      "cleaned_records": 0,
+      "quarantine_records": 1,
+      "reason": "missing_exported_at"
+    }
+  },
+  "r9_hr_stale_content": {
+    "inject": "hr_leave_policy contains stale 10-day annual leave text with effective_date 2026-02-01",
+    "without_rule_emulated": {
+      "cleaned_records": 1,
+      "quarantine_records": 0,
+      "expectation_halt": true,
+      "expectation_detail": "violations=1"
+    },
+    "with_rule_observed": {
+      "cleaned_records": 0,
+      "quarantine_records": 1,
+      "reason": "stale_hr_content_10d_annual",
+      "expectation_halt": false
+    }
+  },
+  "e7_pydantic_schema_valid": {
+    "observed": {
+      "passed": false,
+      "severity": "halt",
+      "detail": "pydantic_invalid=1, first_error=row_0(policy_refund_v4_1_ok): Value error, exported_at không được rỗng",
+      "pipeline_should_halt": true
+    }
+  },
+  "e8_no_duplicate_chunk_ids": {
+    "observed": {
+      "passed": false,
+      "severity": "halt",
+      "detail": "duplicate_chunk_ids=1",
+      "pipeline_should_halt": true
+    }
+  },
+  "e9_doc_coverage_all_allowed": {
+    "observed": {
+      "passed": false,
+      "severity": "warn",
+      "detail": "missing_docs=['hr_leave_policy']",
+      "pipeline_should_halt": false
+    }
+  }
+}
